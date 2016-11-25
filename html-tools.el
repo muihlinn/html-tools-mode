@@ -30,7 +30,7 @@
   '("ol" "ul"))
 
 (defvar html-tools-containers
-  '("body" "article" "aside" "main" "header" "footer" "section"))
+  '("body" "article" "aside" "main" "header" "footer" "section" "div"))
 
 
 (defun html-tools/bound-paragraph()
@@ -98,53 +98,53 @@ TAG is the tag to add/replace."
 	) ;let
   ) ;defun
 
-(defun html-tools/find-node()
-  ""
-  (interactive)
-  (let ((elem_pos (point)) (action "") (tag    "h7") (pos))
+;; (defun html-tools/find-node()
+;;   ""
+;;   (interactive)
+;;   (let ((elem_pos (point)) (action "") (tag    "h7") (pos))
 
-	(while (not (or
-				 (member (web-mode-element-tag-name) html-tools-paragraphs)
-				 (member (web-mode-element-tag-name) html-tools-containers)))
+;; 	(while (not (or
+;; 				 (member (web-mode-element-tag-name) html-tools-paragraphs)
+;; 				 (member (web-mode-element-tag-name) html-tools-containers)))
 
-	  (web-mode-element-parent)
+;; 	  (web-mode-element-parent)
 
-	  (cond ((member (web-mode-element-tag-name) html-tools-containers)
-			 (setq action "envolver"))
-			((member (web-mode-element-tag-name) html-tools-paragraphs)
-			 (setq action "sustituir")))
-	  )									;while
+;; 	  (cond ((member (web-mode-element-tag-name) html-tools-containers)
+;; 			 (setq action "envolver"))
+;; 			((member (web-mode-element-tag-name) html-tools-paragraphs)
+;; 			 (setq action "sustituir")))
+;; 	  )									;while
 
-	(message action)
+;; 	(message action)
 
-	(cond ((string= action "envolver")
-		   (message "envolver")
-		   (goto-char elem_pos)
-		   (html-tools/bound-paragraph)
-		   (web-mode-element-wrap tag))
+;; 	(cond ((string= action "envolver")
+;; 		   (message "envolver")
+;; 		   (goto-char elem_pos)
+;; 		   (html-tools/bound-paragraph)
+;; 		   (web-mode-element-wrap tag))
 
-		  ((string= action "sustituir")
-		   (message "sustituir")
-		   (web-mode-element-rename tag)
-		   ;; excursion copied from merge-tag
-		   ;; (save-excursion
-		   ;; 	 (when (and (> (length tag) 0)
-		   ;; 				(web-mode-element-beginning)
-		   ;; 				(looking-at "<\\([[:alnum:]]+\\(:?[-][[:alpha:]]+\\)?\\)"))
-		   ;; 	   (setq pos (point))
-		   ;; 	   (unless (web-mode-element-is-void)
-		   ;; 		 (save-match-data
-		   ;; 		   (web-mode-tag-match)
-		   ;; 		   (if (looking-at "</[ ]*\\([[:alnum:]]+\\(:?[-][[:alpha:]]+\\)?\\)")
-		   ;; 			   (replace-match (concat "</" tag))
-		   ;; 			 )))
-		   ;; 	   (goto-char pos)
-		   ;; 	   (replace-match (concat "<" tag))
-		   ;; 	   ))
-		   )
-		  )
-	)
-  )
+;; 		  ((string= action "sustituir")
+;; 		   (message "sustituir")
+;; 		   (web-mode-element-rename tag)
+;; 		   ;; excursion copied from merge-tag
+;; 		   ;; (save-excursion
+;; 		   ;; 	 (when (and (> (length tag) 0)
+;; 		   ;; 				(web-mode-element-beginning)
+;; 		   ;; 				(looking-at "<\\([[:alnum:]]+\\(:?[-][[:alpha:]]+\\)?\\)"))
+;; 		   ;; 	   (setq pos (point))
+;; 		   ;; 	   (unless (web-mode-element-is-void)
+;; 		   ;; 		 (save-match-data
+;; 		   ;; 		   (web-mode-tag-match)
+;; 		   ;; 		   (if (looking-at "</[ ]*\\([[:alnum:]]+\\(:?[-][[:alpha:]]+\\)?\\)")
+;; 		   ;; 			   (replace-match (concat "</" tag))
+;; 		   ;; 			 )))
+;; 		   ;; 	   (goto-char pos)
+;; 		   ;; 	   (replace-match (concat "<" tag))
+;; 		   ;; 	   ))
+;; 		   )
+;; 		  )
+;; 	)
+;;   )
 
 ;; Line breaks           ---------------------------------------------------------------------------------
 
@@ -183,41 +183,22 @@ TAG is the tag to add/replace."
 
 ;; Lists    ---------------------------------------------------------------------------------
 
-(defun html-tools/make-ul()
-  ""
-  (interactive)
-  (narrow-to-region (region-beginning) (region-end))
-  (save-restriction
-	(goto-char (point-min))
-	(save-excursion
-	  (while (re-search-forward "^[•–-#][[:blank:]]+" nil t)
-		(replace-match "" nil nil))
-	  (goto-char (point-min))
-	  (while (re-search-forward "^\\(.+$\\)" nil t)
-		(replace-match  "<li>\\1</li>" nil nil))
-	  (goto-char (point-min))
-	  (insert (concat "<ul>" (newline)))
-	  (goto-char (point-max))
-	  (insert "</ul>" (newline))))
-  (widen)
-  (web-mode-buffer-indent))
+(defun html-tools/mk-ul() "" (interactive) (html-tools/make-list "ul"))
+(defun html-tools/mk-ol() "" (interactive) (html-tools/make-list "ol"))
 
-(defun html-tools/make-ol()
-  ""
-  (interactive)
+(defun html-tools/make-list(tag)
   (narrow-to-region (region-beginning) (region-end))
-  (save-restriction
-	(goto-char (point-min))
-	(save-excursion
-	  (while (re-search-forward "^[0-9]+[\.\-]+[[:blank:]]+" nil t)
+  (save-excursion
+	(save-restriction
+	  (goto-char (point-min))
+	  (while (re-search-forward "^\\([0-9]+[\.\-]+\\)?[[:blank:]]+" nil t)
 		(replace-match "" nil nil))
 	  (goto-char (point-min))
 	  (while (re-search-forward "^\\(.+$\\)" nil t)
 		(replace-match  "<li>\\1</li>" nil nil))
-	  (goto-char (point-min))
-	  (insert (concat "<ol>" (newline)))
-	  (goto-char (point-max))
-	  (insert (concat "</ol>" (newline)))))
+	  (mark-paragraph)
+	  (web-mode-element-wrap tag))
+	(delete-matching-lines "^$" (point-min) (point-max)))
   (widen)
   (web-mode-buffer-indent))
 
@@ -277,8 +258,8 @@ TAG is the tag to add/replace."
 			;; word - region tags    -------------------------------------------------------
 			;; word - region tags    -------------------------------------------------------
 
-			(define-key html-tools-map (kbd "H-u") 'html-tools/make-ul)
-			(define-key html-tools-map (kbd "H-o") 'html-tools/make-ol)
+			(define-key html-tools-map (kbd "H-u") 'html-tools/mk-ul)
+			(define-key html-tools-map (kbd "H-o") 'html-tools/mk-ol)
 
 			(define-key html-tools-map (kbd "H-a") 'html-tools/linkify)
 
