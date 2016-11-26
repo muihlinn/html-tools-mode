@@ -16,7 +16,7 @@
 
 ;;; Code:
 
-;(require 'web-mode)
+										;(require 'web-mode)
 
 ;; VARIABLES    -------------------------------------------------------
 
@@ -92,7 +92,7 @@ TAG is the tag to add/replace."
 			 (web-mode-element-wrap tag)))
 
 		  ((eq (region-active-p) t)
-										                 ; Está la región activa
+										; Está la región activa
 		   (web-mode-element-wrap tag))					 ; Envolvemos
 		  ) ;cond
 	) ;let
@@ -183,10 +183,12 @@ TAG is the tag to add/replace."
 
 ;; Lists    ---------------------------------------------------------------------------------
 
-(defun html-tools/mk-ul() "" (interactive) (html-tools/make-list "ul"))
-(defun html-tools/mk-ol() "" (interactive) (html-tools/make-list "ol"))
+(defun html-tools/mk-ul() "Formats lines from active region to an unordered list" (interactive) (html-tools/make-list "ul"))
+(defun html-tools/mk-ol() "Formats lines from active region to an ordered list"   (interactive) (html-tools/make-list "ol"))
 
 (defun html-tools/make-list(tag)
+  (if (not (region-active-p)) 			; it only works on a region
+	  (message "Lists can be only formatted from a region")
   (narrow-to-region (region-beginning) (region-end))
   (save-excursion
 	(save-restriction
@@ -200,7 +202,8 @@ TAG is the tag to add/replace."
 	  (web-mode-element-wrap tag))
 	(delete-matching-lines "^$" (point-min) (point-max)))
   (widen)
-  (web-mode-buffer-indent))
+  (web-mode-buffer-indent)))
+
 
 ;; Footnotes    ---------------------------------------------------------------------------------
 
