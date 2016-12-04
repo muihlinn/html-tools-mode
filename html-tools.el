@@ -30,7 +30,7 @@
   '("ol" "ul"))
 
 (defvar html-tools-containers
-  '("body" "article" "aside" "main" "header" "footer" "section" "div"))
+  '("body" "article" "aside" "main" "header" "footer" "section" "div" "blockquote"))
 
 
 (defun html-tools/bound-paragraph()
