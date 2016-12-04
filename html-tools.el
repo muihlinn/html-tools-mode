@@ -176,9 +176,9 @@ TAG is the tag to add/replace."
 	(save-excursion
 	  (goto-char (point-min))
 	  (save-restriction
-		(insert ((concat "<p id=\"ft" (get-register 'i) "\"><a href=\"#" (get-register 'i) "\">"))
-				(goto-char (point-max))
-				(insert "</a>")))
+		(insert (concat "<p id=\"ft" (get-register 'i) "\"><a href=\"#" (get-register 'i) "\">"))
+		(goto-char (point-max))
+		(insert "</a>"))
 	  (widen)
 	  (end-of-line)
 	  (insert "</p>"))))
