@@ -64,87 +64,33 @@
 (defun html-tools/dwim-tag (tag)
   "Find the bounds of element and apply element warp.
 TAG is the tag to add/replace."
-  (let* (bounds parent)
-	(cond ((eq (region-active-p) nil)
-										; No está la región activa
-		   (when (member tag html-tools-paragraphs)				    ; Es tag de párrafo
+  (let* ((elem_pos (point)) bounds parent)
+	(cond ((eq (region-active-p) nil)	                 ; No está la región activa
+		   (when (member tag html-tools-paragraphs)		 ; Es tag de párrafo
 			 (while (not (or
 						  (member (web-mode-element-tag-name) html-tools-paragraphs)
 						  (member (web-mode-element-tag-name) html-tools-containers)))
 			   (web-mode-element-parent))
 
 			 (cond ((member (web-mode-element-tag-name) html-tools-containers)
-					(progn
-					  (message "envolver")
+					(progn				                 ; envolver
 					  (goto-char elem_pos)
 					  (html-tools/bound-paragraph)
 					  (web-mode-element-wrap tag)))
 
 				   ((member (web-mode-element-tag-name) html-tools-paragraphs)
-					(progn
-					  (message "sustituir")
-					  (web-mode-element-rename tag)))
-				   )
+					(web-mode-element-rename tag)))
 			 ) ; when
 
 		   (when (member tag html-tools-words)	         ; Es una tag para palabras
 			 (html-tools/bound-word)
 			 (web-mode-element-wrap tag)))
 
-		  ((eq (region-active-p) t)
-										; Está la región activa
+		  ((eq (region-active-p) t)		                 ; Está la región activa
 		   (web-mode-element-wrap tag))					 ; Envolvemos
 		  ) ;cond
 	) ;let
   ) ;defun
-
-;; (defun html-tools/find-node()
-;;   ""
-;;   (interactive)
-;;   (let ((elem_pos (point)) (action "") (tag    "h7") (pos))
-
-;; 	(while (not (or
-;; 				 (member (web-mode-element-tag-name) html-tools-paragraphs)
-;; 				 (member (web-mode-element-tag-name) html-tools-containers)))
-
-;; 	  (web-mode-element-parent)
-
-;; 	  (cond ((member (web-mode-element-tag-name) html-tools-containers)
-;; 			 (setq action "envolver"))
-;; 			((member (web-mode-element-tag-name) html-tools-paragraphs)
-;; 			 (setq action "sustituir")))
-;; 	  )									;while
-
-;; 	(message action)
-
-;; 	(cond ((string= action "envolver")
-;; 		   (message "envolver")
-;; 		   (goto-char elem_pos)
-;; 		   (html-tools/bound-paragraph)
-;; 		   (web-mode-element-wrap tag))
-
-;; 		  ((string= action "sustituir")
-;; 		   (message "sustituir")
-;; 		   (web-mode-element-rename tag)
-;; 		   ;; excursion copied from merge-tag
-;; 		   ;; (save-excursion
-;; 		   ;; 	 (when (and (> (length tag) 0)
-;; 		   ;; 				(web-mode-element-beginning)
-;; 		   ;; 				(looking-at "<\\([[:alnum:]]+\\(:?[-][[:alpha:]]+\\)?\\)"))
-;; 		   ;; 	   (setq pos (point))
-;; 		   ;; 	   (unless (web-mode-element-is-void)
-;; 		   ;; 		 (save-match-data
-;; 		   ;; 		   (web-mode-tag-match)
-;; 		   ;; 		   (if (looking-at "</[ ]*\\([[:alnum:]]+\\(:?[-][[:alpha:]]+\\)?\\)")
-;; 		   ;; 			   (replace-match (concat "</" tag))
-;; 		   ;; 			 )))
-;; 		   ;; 	   (goto-char pos)
-;; 		   ;; 	   (replace-match (concat "<" tag))
-;; 		   ;; 	   ))
-;; 		   )
-;; 		  )
-;; 	)
-;;   )
 
 ;; Line breaks           ---------------------------------------------------------------------------------
 
