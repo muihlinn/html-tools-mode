@@ -18,6 +18,8 @@
 
 (require 'web-mode)
 
+;; VARIABLES    -------------------------------------------------------
+
 (defvar html-tools-words
   '("strong" "small" "em" ))
 
@@ -53,41 +55,41 @@
 (defun html-tools/bound-word()
   ""
   (let (bounds)
-	(setq bounds (bounds-of-thing-at-point 'word))
-	(goto-char (car bounds))
-	(push-mark-command nil)
-	(goto-char (cdr bounds))))
+		(setq bounds (bounds-of-thing-at-point 'word))
+		(goto-char (car bounds))
+		(push-mark-command nil)
+		(goto-char (cdr bounds))))
 
 
 (defun html-tools/dwim-tag (tag)
   "Find the bounds of element and apply element warp.
 TAG is the tag to add/replace."
   (let* ((elem_pos (point)) bounds parent)
-	(cond ((eq (region-active-p) nil)	                 ; No está la región activa
-		   (when (member tag html-tools-paragraphs)		 ; Es tag de párrafo
-			 (while (not (or
-						  (member (web-mode-element-tag-name) html-tools-paragraphs)
-						  (member (web-mode-element-tag-name) html-tools-containers)))
-			   (web-mode-element-parent))
+		(cond ((eq (region-active-p) nil)	                 ; No está la región activa
+					 (when (member tag html-tools-paragraphs)		 ; Es tag de párrafo
+						 (while (not (or
+													(member (web-mode-element-tag-name) html-tools-paragraphs)
+													(member (web-mode-element-tag-name) html-tools-containers)))
+							 (web-mode-element-parent))
 
-			 (cond ((member (web-mode-element-tag-name) html-tools-containers)
-					(progn				                 ; envolver
-					  (goto-char elem_pos)
-					  (html-tools/bound-paragraph)
-					  (web-mode-element-wrap tag)))
+						 (cond ((member (web-mode-element-tag-name) html-tools-containers)
+										(progn				                 ; envolver
+											(goto-char elem_pos)
+											(html-tools/bound-paragraph)
+											(web-mode-element-wrap tag)))
 
-				   ((member (web-mode-element-tag-name) html-tools-paragraphs)
-					(web-mode-element-rename tag)))
-			 ) ; when
+									 ((member (web-mode-element-tag-name) html-tools-paragraphs)
+										(web-mode-element-rename tag)))
+						 ) ; when
 
-		   (when (member tag html-tools-words)	         ; Es una tag para palabras
-			 (html-tools/bound-word)
-			 (web-mode-element-wrap tag)))
+					 (when (member tag html-tools-words)	         ; Es una tag para palabras
+						 (html-tools/bound-word)
+						 (web-mode-element-wrap tag)))
 
-		  ((eq (region-active-p) t)		                 ; Está la región activa
-		   (web-mode-element-wrap tag))					 ; Envolvemos
-		  ) ;cond
-	) ;let
+					((eq (region-active-p) t)		                 ; Está la región activa
+					 (web-mode-element-wrap tag))					 ; Envolvemos
+					) ;cond
+		) ;let
   ) ;defun
 
 ;; Line breaks           ---------------------------------------------------------------------------------
@@ -115,15 +117,15 @@ TAG is the tag to add/replace."
   "Region to link."
   (interactive)
   (let ((inicio (region-beginning)) (fin (region-end)))
-	(copy-to-register 'i  inicio fin)
-	(narrow-to-region inicio fin)
-	(save-excursion
-	  (save-restriction
-		(goto-char (point-min))
-		(insert (concat "<a href=\"" (get-register 'i) "\" target=\"_blank\">"))
-		(goto-char (point-max))
-		(insert "</a>")))
-	(widen)))
+		(copy-to-register 'i  inicio fin)
+		(narrow-to-region inicio fin)
+		(save-excursion
+			(save-restriction
+				(goto-char (point-min))
+				(insert (concat "<a href=\"" (get-register 'i) "\" target=\"_blank\">"))
+				(goto-char (point-max))
+				(insert "</a>")))
+		(widen)))
 
 ;; Lists    ---------------------------------------------------------------------------------
 
@@ -132,21 +134,21 @@ TAG is the tag to add/replace."
 
 (defun html-tools/make-list(tag)
   (if (not (region-active-p)) 			; it only works on a region
-	  (message "Lists can be only formatted from a region")
-  (narrow-to-region (region-beginning) (region-end))
-  (save-excursion
-	(save-restriction
-	  (goto-char (point-min))
-	  (while (re-search-forward "^\\([0-9]+[\.\-]+\\)?[[:blank:]]+" nil t)
-		(replace-match "" nil nil))
-	  (goto-char (point-min))
-	  (while (re-search-forward "^\\(.+$\\)" nil t)
-		(replace-match  "<li>\\1</li>" nil nil))
-	  (mark-paragraph)
-	  (web-mode-element-wrap tag))
-	(delete-matching-lines "^$" (point-min) (point-max)))
-  (widen)
-  (web-mode-buffer-indent)))
+			(message "Lists can be only formatted from a region")
+		(narrow-to-region (region-beginning) (region-end))
+		(save-excursion
+			(save-restriction
+				(goto-char (point-min))
+				(while (re-search-forward "^\\([0-9]+[\.\-]+\\)?[[:blank:]]+" nil t)
+					(replace-match "" nil nil))
+				(goto-char (point-min))
+				(while (re-search-forward "^\\(.+$\\)" nil t)
+					(replace-match  "<li>\\1</li>" nil nil))
+				(mark-paragraph)
+				(web-mode-element-wrap tag))
+			(delete-matching-lines "^$" (point-min) (point-max)))
+		(widen)
+		(web-mode-buffer-indent)))
 
 
 ;; Footnotes    ---------------------------------------------------------------------------------
@@ -155,31 +157,31 @@ TAG is the tag to add/replace."
   ""
   (interactive)
   (let ((inicio (region-beginning)) (fin (region-end)))
-	(copy-to-register 'i inicio fin)
-	(narrow-to-region inicio fin)
-	(save-restriction
-	  (goto-char (point-min))
-	  (save-excursion
-		(insert (concat "<sup><a href=\"#ft" (get-register 'i) "\" id=\"" (get-register 'i) "\">"))
-		(goto-char (point-max))
-		(insert "</a></sup>")))
-	(widen)))
+		(copy-to-register 'i inicio fin)
+		(narrow-to-region inicio fin)
+		(save-restriction
+			(goto-char (point-min))
+			(save-excursion
+				(insert (concat "<sup><a href=\"#ft" (get-register 'i) "\" id=\"" (get-register 'i) "\">"))
+				(goto-char (point-max))
+				(insert "</a></sup>")))
+		(widen)))
 
 (defun html-tools/make-footnote()
   ""
   (interactive)
   (let ((inicio (region-beginning)) (fin (region-end)))
-	(copy-to-register 'i inicio fin)
-	(narrow-to-region inicio fin)
-	(save-excursion
-	  (goto-char (point-min))
-	  (save-restriction
-		(insert (concat "<p id=\"ft" (get-register 'i) "\"><a href=\"#" (get-register 'i) "\">"))
-		(goto-char (point-max))
-		(insert "</a>"))
-	  (widen)
-	  (end-of-line)
-	  (insert "</p>"))))
+		(copy-to-register 'i inicio fin)
+		(narrow-to-region inicio fin)
+		(save-excursion
+			(goto-char (point-min))
+			(save-restriction
+				(insert (concat "<p id=\"ft" (get-register 'i) "\"><a href=\"#" (get-register 'i) "\">"))
+				(goto-char (point-max))
+				(insert "</a>"))
+			(widen)
+			(end-of-line)
+			(insert "</p>"))))
 
 ;; Minor mode definition    ---------------------------------------------------------------------------------
 
@@ -187,33 +189,33 @@ TAG is the tag to add/replace."
   "Easy formatting of html code."
   :lighter " html"
   :keymap (let ((html-tools-map (make-sparse-keymap)))
-			;; line breaks           -------------------------------------------------------
-			(define-key html-tools-map [S-return]  'html-tools/mk-br)
-			;; word - region tags    -------------------------------------------------------
-			(define-key html-tools-map (kbd "H-b") 'html-tools/mk-strong)
-			(define-key html-tools-map (kbd "H-s") 'html-tools/mk-small)
-			(define-key html-tools-map (kbd "H-i") 'html-tools/mk-em)
-			(define-key html-tools-map (kbd "H-B") 'html-tools/mk-blockquote)
-			;; paragraphs - headings  -------------------------------------------------------
-			(define-key html-tools-map (kbd "H-p") 'html-tools/mk-paragraphs)
-			(define-key html-tools-map (kbd "H-1") 'html-tools/mk-h1)
-			(define-key html-tools-map (kbd "H-2") 'html-tools/mk-h2)
-			(define-key html-tools-map (kbd "H-3") 'html-tools/mk-h3)
-			(define-key html-tools-map (kbd "H-4") 'html-tools/mk-h4)
-			(define-key html-tools-map (kbd "H-5") 'html-tools/mk-h5)
-			(define-key html-tools-map (kbd "H-6") 'html-tools/mk-h6)
-			;; word - region tags    -------------------------------------------------------
-			;; word - region tags    -------------------------------------------------------
+						;; line breaks           -------------------------------------------------------
+						(define-key html-tools-map [S-return]  'html-tools/mk-br)
+						;; word - region tags    -------------------------------------------------------
+						(define-key html-tools-map (kbd "H-b") 'html-tools/mk-strong)
+						(define-key html-tools-map (kbd "H-s") 'html-tools/mk-small)
+						(define-key html-tools-map (kbd "H-i") 'html-tools/mk-em)
+						(define-key html-tools-map (kbd "H-B") 'html-tools/mk-blockquote)
+						;; paragraphs - headings  -------------------------------------------------------
+						(define-key html-tools-map (kbd "H-p") 'html-tools/mk-paragraphs)
+						(define-key html-tools-map (kbd "H-1") 'html-tools/mk-h1)
+						(define-key html-tools-map (kbd "H-2") 'html-tools/mk-h2)
+						(define-key html-tools-map (kbd "H-3") 'html-tools/mk-h3)
+						(define-key html-tools-map (kbd "H-4") 'html-tools/mk-h4)
+						(define-key html-tools-map (kbd "H-5") 'html-tools/mk-h5)
+						(define-key html-tools-map (kbd "H-6") 'html-tools/mk-h6)
+						;; word - region tags    -------------------------------------------------------
+						;; word - region tags    -------------------------------------------------------
 
-			(define-key html-tools-map (kbd "H-u") 'html-tools/mk-ul)
-			(define-key html-tools-map (kbd "H-o") 'html-tools/mk-ol)
+						(define-key html-tools-map (kbd "H-u") 'html-tools/mk-ul)
+						(define-key html-tools-map (kbd "H-o") 'html-tools/mk-ol)
 
-			(define-key html-tools-map (kbd "H-a") 'html-tools/linkify)
+						(define-key html-tools-map (kbd "H-a") 'html-tools/linkify)
 
-			(define-key html-tools-map (kbd "H-f r") 'html-tools/make-footnote-reference)
-			(define-key html-tools-map (kbd "H-f f") 'html-tools/make-footnote)
+						(define-key html-tools-map (kbd "H-f r") 'html-tools/make-footnote-reference)
+						(define-key html-tools-map (kbd "H-f f") 'html-tools/make-footnote)
 
-			html-tools-map))
+						html-tools-map))
 
 (add-hook 'web-mode-hook 'html-tools-mode)
 
