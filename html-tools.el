@@ -375,7 +375,6 @@ TAG."
 (defun html-tools/insert-footnotes-container()
 	"Insert footnotes container at the end of body."
 	(interactive)
-	(save-excursion
 		;; find container parent which is semantically significant
 		;; by now, just body
 
@@ -387,13 +386,14 @@ TAG."
 		(web-mode-tag-match)							              ; goto just before its closing tag
 		(html-tools/footnote-container)				          ; insert skeleton
 		)
-	)
+
 
 ;; TODO: reindent, m-q
 
 (defun html-tools/mk-footnote()
 	"Insert footnote reference at point.
 Requires working with a selection."
+
 	(interactive)
 	(let (next-footnote-pos footnote rb re)
 		(save-excursion
