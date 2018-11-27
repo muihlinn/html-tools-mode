@@ -114,6 +114,24 @@ No spaces, newlines, etc."
 			 						 (buffer-substring (region-beginning)(region-end)))))))
 
 
+(defun html-tools/select-target()
+	"Return current region content or find next word and return it making a region."
+	(let (content)
+		(if (region-active-p)
+				(setq content  (buffer-substring (region-beginning)(region-end)))
+
+			(if (thing-at-point 'whitespace)	         ; NO WHITESPACES
+					(progn (forward-word) (backward-word))) ; place cursor at beginning of next word
+
+			(setq content
+			 			(progn (html-tools/bound-word)
+			 						 (buffer-substring (region-beginning)(region-end)))))
+		;(eval content)
+
+		))
+
+
+
 (defun html-tools/dwim-tag (tag)
 	"Find the bounds of element and apply element warp.
 TAG is the tag to add/replace."
