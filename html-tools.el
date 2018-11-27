@@ -127,19 +127,29 @@ TAG is the tag to add/replace."
 (defun html-tools/mk-h5()					"Convert region to heading 5." (interactive) (html-tools/dwim-tag "h5"))
 (defun html-tools/mk-h6()					"Convert region to heading 6." (interactive) (html-tools/dwim-tag "h6"))
 
-(defun html-tools/linkify()
-  "Region to link."
-  (interactive)
-  (let ((inicio (region-beginning)) (fin (region-end)))
-		(copy-to-register 'i  inicio fin)
-		(narrow-to-region inicio fin)
+(defun html-tools/mk-a()
+	"Make a link from region if active, next word if not."
+	(interactive)
+	(let ((content (html-tools/select-target))) ;TODO: content no puede tener espacios en blanco
 		(save-excursion
-			(save-restriction
-				(goto-char (point-min))
-				(insert (concat "<a href=\"" (get-register 'i) "\" target=\"_blank\">"))
-				(goto-char (point-max))
-				(insert "</a>")))
-		(widen)))
+			(when (region-active-p) (kill-region (region-beginning)(region-end))) ; it's suppossed that it's always active as this point
+			(insert (concat " <a href=\"" content "\" target=\"_blank\">" content "</a>"))))
+
+
+
+;; ( <a href="defun" target="_blank">defun</a> html-tools/linkify()
+;;   "Region to link."
+;;   (interactive)
+;;   (let ((inicio (region-beginning)) (fin (region-end)))
+;; 		(copy-to-register 'i  inicio fin)
+;; 		(narrow-to-region inicio fin)
+;; 		(save-excursion
+;; 			(save-restriction
+;; 				(goto-char (point-min))
+;; 				(insert (concat "<a href=\"" (get-register 'i) "\" target=\"_blank\">"))
+;; 				(goto-char (point-max))
+;; 				(insert "</a>")))
+;; 		(widen)))
 
 ;; Lists    ---------------------------------------------------------------------------------
 
