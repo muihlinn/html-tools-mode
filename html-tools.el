@@ -61,6 +61,20 @@
 		(goto-char (cdr bounds))))
 
 
+(defun html-tools/select-target()
+	"Return current region content or find next word and return it making a region."
+	(let (content)
+		(if (region-active-p)
+				(setq content  (buffer-substring (region-beginning)(region-end)))
+
+			(if (thing-at-point 'whitespace)	         ; NO WHITESPACES
+					(progn (forward-word) (backward-word))) ; place cursor at beginning of next word
+
+			(setq content
+			 			(progn (html-tools/bound-word)
+			 						 (buffer-substring (region-beginning)(region-end)))))))
+
+
 (defun html-tools/dwim-tag (tag)
   "Find the bounds of element and apply element warp.
 TAG is the tag to add/replace."
@@ -210,7 +224,7 @@ TAG is the tag to add/replace."
 						(define-key html-tools-map (kbd "H-u") 'html-tools/mk-ul)
 						(define-key html-tools-map (kbd "H-o") 'html-tools/mk-ol)
 
-						(define-key html-tools-map (kbd "H-a") 'html-tools/linkify)
+						(define-key html-tools-map (kbd "H-a") 'html-tools/mk-a)
 
 						(define-key html-tools-map (kbd "H-f r") 'html-tools/make-footnote-reference)
 						(define-key html-tools-map (kbd "H-f f") 'html-tools/make-footnote)
