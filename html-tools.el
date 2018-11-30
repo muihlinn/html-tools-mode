@@ -60,7 +60,6 @@
 (defvar html-tools-parent-element nil)
 (defvar html-tools-current-tag    nil)
 
-
 ;; CORE UTILITIES ------------------------------------------------------
 
 (defun html-tools/bound-paragraph()
@@ -111,25 +110,10 @@ No spaces, newlines, etc."
 
 			(setq content
 			 			(progn (html-tools/bound-word)
-			 						 (buffer-substring (region-beginning)(region-end)))))))
-
-
-(defun html-tools/select-target()
-	"Return current region content or find next word and return it making a region."
-	(let (content)
-		(if (region-active-p)
-				(setq content  (buffer-substring (region-beginning)(region-end)))
-
-			(if (thing-at-point 'whitespace)	         ; NO WHITESPACES
-					(progn (forward-word) (backward-word))) ; place cursor at beginning of next word
-
-			(setq content
-			 			(progn (html-tools/bound-word)
 			 						 (buffer-substring (region-beginning)(region-end)))))
 		;(eval content)
 
 		))
-
 
 
 (defun html-tools/dwim-tag (tag)
