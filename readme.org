@@ -1,0 +1,26 @@
+* html-tools-mode
+
+	html-tools-mode is an emacs minor mode which extends [[http://web-mode.org/][web-mode]] to
+	allow quick formatting of existing text/html files into html5.
+
+	Those were originally a bunch of *ad hoc* Emacs Lisp functions
+	written to speed up formatting of already existent entries for the
+	[[http://iac.org.es][Instituto de Arte Contemporáneo]] website.
+
+
+** Introduction
+	 Ever had to format legacy pages to move the content to a new design?
+   Had to work with given text of unknow origin?
+
+** What's the idea
+
+	 The idea is quickly wrapping regions, words, or whatever in the
+	 elements they should have.
+
+** What is NOT the idea
+
+	 This is not:
+
+	 - a template tool replacement
+	 - a DOM model manipulator
+	 -
