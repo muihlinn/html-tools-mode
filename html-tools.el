@@ -12,7 +12,6 @@
 ;;==============================================================================
 
 ;; ad hoc functions to reformat existing html/text quickly using web-mode
-;;
 
 ;;; Code:
 
@@ -21,16 +20,17 @@
 ;; VARIABLES    -------------------------------------------------------
 
 (defvar html-tools-words
-  '("strong" "small" "em" ))
+  '("strong" "small" "em" "b" "i"))
 
 (defvar html-tools-paragraphs
-  '("h1" "h2" "h3" "h4" "h5" "h6" "p"))
+  '("h1" "h2" "h3" "h4" "h5" "h6" "p" "blockquote"))
 
 (defvar html-tools-lists
   '("ol" "ul"))
 
 (defvar html-tools-containers
-  '("body" "article" "aside" "main" "header" "footer" "section" "div" "blockquote"))
+  '("body" "article" "aside" "main" "header" "footer" "section" "div" ))
+
 (defvar html-tools-elem-pos       nil)
 (defvar html-tools-elem-beg       nil)
 (defvar html-tools-elem-end       nil)
