@@ -110,11 +110,7 @@ No spaces, newlines, etc."
 
 			(setq content
 			 			(progn (html-tools/bound-word)
-			 						 (buffer-substring (region-beginning)(region-end)))))
-		;(eval content)
-
-		))
-
+			 						 (buffer-substring (region-beginning)(region-end)))))))
 
 (defun html-tools/dwim-tag (tag)
 	"Find the bounds of element and apply element warp.
