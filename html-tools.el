@@ -94,33 +94,61 @@ No spaces, newlines, etc."
 (defun html-tools/dwim-tag (tag)
   "Find the bounds of element and apply element warp.
 TAG is the tag to add/replace."
-  (let* ((elem_pos (point)) bounds parent)
-		(cond ((eq (region-active-p) nil)	                 ; No está la región activa
-					 (when (member tag html-tools-paragraphs)		 ; Es tag de párrafo
-						 (while (not (or
-													(member (web-mode-element-tag-name) html-tools-paragraphs)
-													(member (web-mode-element-tag-name) html-tools-containers)))
-							 (web-mode-element-parent))
+  (let ( bounds )
 
-						 (cond ((member (web-mode-element-tag-name) html-tools-containers)
-										(progn				                 ; envolver
-											(goto-char elem_pos)
-											(html-tools/bound-paragraph)
-											(web-mode-element-wrap tag)))
+		;; when region is active, only wrapping is needed
+		(when (region-active-p) (web-mode-element-wrap tag))
 
-									 ((member (web-mode-element-tag-name) html-tools-paragraphs)
-										(web-mode-element-rename tag)))
-						 ) ; when
+		(when (not (region-active-p))                     ;;  check if region is NOT active
+			;; (message "%s" "no hay región activa")
 
-					 (when (member tag html-tools-words)	         ; Es una tag para palabras
-						 (html-tools/bound-word)
-						 (web-mode-element-wrap tag)))
+			(when (member tag html-tools-words)	            ;; Es una tag para palabras
+				(html-tools/bound-word)
+				(web-mode-element-wrap tag))
 
-					((eq (region-active-p) t)		                 ; Está la región activa
-					 (web-mode-element-wrap tag))					 ; Envolvemos
-					) ;cond
-		) ;let
-  ) ;defun
+			(when (member tag html-tools-paragraphs)        ;; When tag is a paragraph tag
+				;; (message "1: %s" "procesando tag de párrafo")
+				(html-tools/set-references)				            ;; set element references
+				(goto-char html-tools-elem-beg)
+				;; (read-from-minibuffer "...")
+
+				(cond ((not (web-mode-element-tag-name))
+							 (progn
+								 (push-mark html-tools-elem-beg t t)
+								 (goto-char html-tools-elem-end)
+								 (web-mode-element-wrap tag)
+								 (when (region-active-p) (push-mark nil t nil))
+								 ))
+
+							((web-mode-element-tag-name)
+							 (progn
+								 (message "%s" (web-mode-element-tag-name))
+								 (goto-char html-tools-elem-beg)
+								 (web-mode-element-rename tag))
+							 ))))
+		(html-tools/clean-vars)))
+
+;; 			 (if (and (member html-tools-parent-tag html-tools-containers)
+;; 								(member (web-mode-element-tag-name elem) html-tools-paragraphs))
+;; 					 (progn
+;; 						 (message "3: %s" parent)
+;; 				 (progn                                      ;; Wrap element next to or around point with the paragraph tag
+;; 					 (goto-char elem_pos)
+;; 					 (html-tools/bound-paragraph)
+;; 					 (message "4: %s" html-tools-current-tag)
+;; 					 (read-from-minibuffer "... ")
+;; 					 ;; TODO: misaligned tags
+;; 					 ;; ----------------------------------------------------
+;; 					 ;; IF paragraph starts with a tag, wrap tags are alone,
+;; 					 ;; unlike inline when not. why?
+;; 					 (when (buffer-narrowed-p)
+;; 						 (indent-region (point-min)(point-max))
+;; 						 (goto-char (point-max))
+;; 						 (widen)))
+;; 				 )) ; when
+;; 		 ;; Wrap element next to or around point with the word tag
+;; 		))) ;defun
+
 (defun html-tools/clean-vars()
 	""
 	(setq html-tools-elem-pos       nil
