@@ -112,20 +112,21 @@ TAG is the tag to add/replace."
 
 ;; word - region tags    ---------------------------------------------------------------------------------
 
-(defun html-tools/mk-strong()			"Warp current element with <strong>."     (interactive) (html-tools/dwim-tag "strong"))
-(defun html-tools/mk-small()			"Warp current element with <small>."      (interactive) (html-tools/dwim-tag "small"))
-(defun html-tools/mk-em()					"Warp current element with <em>."         (interactive) (html-tools/dwim-tag "em"))
-(defun html-tools/mk-blockquote() "Warp current element with <blockquote>." (interactive) (web-mode-element-wrap "blockquote"))
+(defun html-tools/mk-strong()	"Warp current element with <strong>." (interactive) (html-tools/dwim-tag "strong"))
+(defun html-tools/mk-small()	"Warp current element with <small>."  (interactive) (html-tools/dwim-tag "small"))
+(defun html-tools/mk-em()			"Warp current element with <em>."     (interactive) (html-tools/dwim-tag "em"))
 
 ;; Paragraphs / headings ---------------------------------------------------------------------------------
 
-(defun html-tools/mk-paragraphs() "Convert region to paragraph." (interactive) (html-tools/dwim-tag "p"))
-(defun html-tools/mk-h1()					"Convert region to heading 1." (interactive) (html-tools/dwim-tag "h1"))
-(defun html-tools/mk-h2()					"Convert region to heading 2." (interactive) (html-tools/dwim-tag "h2"))
-(defun html-tools/mk-h3()					"Convert region to heading 3." (interactive) (html-tools/dwim-tag "h3"))
-(defun html-tools/mk-h4()					"Convert region to heading 4." (interactive) (html-tools/dwim-tag "h4"))
-(defun html-tools/mk-h5()					"Convert region to heading 5." (interactive) (html-tools/dwim-tag "h5"))
-(defun html-tools/mk-h6()					"Convert region to heading 6." (interactive) (html-tools/dwim-tag "h6"))
+(defun html-tools/mk-blockquote() "Warp current element with <blockquote>." (interactive) (web-mode-element-wrap "blockquote"))
+(defun html-tools/mk-paragraphs() "Convert region to paragraph."            (interactive) (html-tools/dwim-tag "p"))
+
+(defun html-tools/mk-h1()	"Convert region to heading 1." (interactive) (html-tools/dwim-tag "h1"))
+(defun html-tools/mk-h2()	"Convert region to heading 2." (interactive) (html-tools/dwim-tag "h2"))
+(defun html-tools/mk-h3()	"Convert region to heading 3." (interactive) (html-tools/dwim-tag "h3"))
+(defun html-tools/mk-h4()	"Convert region to heading 4." (interactive) (html-tools/dwim-tag "h4"))
+(defun html-tools/mk-h5()	"Convert region to heading 5." (interactive) (html-tools/dwim-tag "h5"))
+(defun html-tools/mk-h6()	"Convert region to heading 6." (interactive) (html-tools/dwim-tag "h6"))
 
 (defun html-tools/mk-a()
 	"Make a link from region if active, next word if not."
@@ -133,23 +134,7 @@ TAG is the tag to add/replace."
 	(let ((content (html-tools/select-target))) ;TODO: content no puede tener espacios en blanco
 		(save-excursion
 			(when (region-active-p) (kill-region (region-beginning)(region-end))) ; it's suppossed that it's always active as this point
-			(insert (concat " <a href=\"" content "\" target=\"_blank\">" content "</a>"))))
-
-
-
-;; ( <a href="defun" target="_blank">defun</a> html-tools/linkify()
-;;   "Region to link."
-;;   (interactive)
-;;   (let ((inicio (region-beginning)) (fin (region-end)))
-;; 		(copy-to-register 'i  inicio fin)
-;; 		(narrow-to-region inicio fin)
-;; 		(save-excursion
-;; 			(save-restriction
-;; 				(goto-char (point-min))
-;; 				(insert (concat "<a href=\"" (get-register 'i) "\" target=\"_blank\">"))
-;; 				(goto-char (point-max))
-;; 				(insert "</a>")))
-;; 		(widen)))
+			(insert (concat " <a href=\"" content "\" target=\"_blank\">" content "</a>")))))
 
 ;; Lists    ---------------------------------------------------------------------------------
 
