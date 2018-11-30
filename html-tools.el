@@ -31,35 +31,51 @@
 
 (defvar html-tools-containers
   '("body" "article" "aside" "main" "header" "footer" "section" "div" "blockquote"))
+(defvar html-tools-elem-pos       nil)
+(defvar html-tools-elem-beg       nil)
+(defvar html-tools-elem-end       nil)
+(defvar html-tools-parent-tag     nil)
+(defvar html-tools-parent-element nil)
+(defvar html-tools-current-tag    nil)
 
+;; CORE UTILITIES ------------------------------------------------------
 
 (defun html-tools/bound-paragraph()
-  ""
-  (beginning-of-line)
-  (mark-end-of-sentence 1)
-  (save-excursion
-	(narrow-to-region (region-beginning) (region-end))
-	;; Trim any whitespace at the beggining/end of paragraph
+	"Shrink region to paragraph content.
+No spaces, newlines, etc."
+	(interactive)
+	(mark-paragraph)
+	(narrow-to-region (region-beginning)(region-end))
 	(save-restriction
-	  (goto-char (point-min))
-	  (when (re-search-forward "^[[:blank:]]+" nil t)
-		(replace-match "" nil nil))
-	  (goto-char (point-min))
-	  (when (re-search-forward "[[:blank:]]*$" nil t)
-		(replace-match "" nil nil))
-	  (goto-char (point-max))
-	  (newline)))
-  (widen)
-  (setq deactivate-mark nil))
+		(html-tools/first-of-it)
+
+		(setq html-tools-elem-beg (point)
+		      html-tools-current-tag (web-mode-element-tag-name))
+
+		(push-mark (point) t t)
+		(html-tools/last-of-it)
+		(setq html-tools-elem-end (point))
+		))
 
 (defun html-tools/bound-word()
-  ""
+  "Word at point to region."
+	(interactive)
   (let (bounds)
 		(setq bounds (bounds-of-thing-at-point 'word))
 		(goto-char (car bounds))
-		(push-mark-command nil)
+		(push-mark nil t t)
 		(goto-char (cdr bounds))))
 
+(defun html-tools/first-of-it()
+	"Find first narrowed buffer char."
+	;;(when (not (buffer-narrowed-p)) )
+	(goto-char (point-min))
+	(re-search-forward "[^[:alnum:][:punct:]]+" nil t))
+
+(defun html-tools/last-of-it()
+	"Find last narrowed buffer char."
+	(goto-char (point-max))
+	(re-search-backward "[^[:alnum:][:punct:]]+" nil t))
 
 (defun html-tools/select-target()
 	"Return current region content or find next word and return it making a region."
@@ -105,6 +121,57 @@ TAG is the tag to add/replace."
 					) ;cond
 		) ;let
   ) ;defun
+(defun html-tools/clean-vars()
+	""
+	(setq html-tools-elem-pos       nil
+				html-tools-elem-beg       nil
+				html-tools-elem-end       nil
+				html-tools-parent-tag     nil
+				html-tools-parent-element nil
+				html-tools-current-tag    nil)
+	)
+
+(defun html-tools/set-references()
+	""
+	(setq html-tools-elem-pos (point)) 											 ; punto en el que se encuentra el cursor al iniciar el comando
+
+	(html-tools/bound-paragraph)
+	;; (save-excursion
+
+	;; 	;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	;; 	(while (not (or
+	;; 							 (member (web-mode-element-tag-name) html-tools-paragraphs)
+	;; 							 (member (web-mode-element-tag-name) html-tools-containers)))
+	;; 		(web-mode-element-parent)
+	;; 		(message "2: %s" (web-mode-element-tag-name))
+	;; 		)
+
+	;; 	(setq html-tools-parent-element (web-mode-element-parent))
+	;; 	(setq html-tools-parent-tag (web-mode-element-tag-name)))
+	;; 	;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+	;; (message "%s" html-tools-parent-element)
+	;; (message "%s" html-tools-parent-tag)
+
+	(widen)
+	(deactivate-mark)
+	(message "%s" html-tools-elem-pos)
+	(message "%s" html-tools-elem-beg)
+	(message "%s" html-tools-elem-end)
+	)
+
+(defun html-tools/get-parent( )
+	""
+	(save-excursion
+		(while (not (or
+								 (member (web-mode-element-tag-name) html-tools-paragraphs)
+								 (member (web-mode-element-tag-name) html-tools-containers)))
+			(web-mode-element-parent)
+			(message "2: %s" (web-mode-element-tag-name))
+			)
+		(setq html-tools-parent-element (web-mode-element-parent))
+		(setq html-tools-parent-tag (web-mode-element-tag-name))))
+
 
 ;; Line breaks           ---------------------------------------------------------------------------------
 
