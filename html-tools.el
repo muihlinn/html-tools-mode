@@ -16,9 +16,7 @@
 
 ;;; Code:
 
-										;(require 'web-mode)
-
-;; VARIABLES    -------------------------------------------------------
+(require 'web-mode)
 
 (defvar html-tools-words
   '("strong" "small" "em" ))
@@ -94,27 +92,27 @@ TAG is the tag to add/replace."
 
 ;; Line breaks           ---------------------------------------------------------------------------------
 
-(defun html-tools/mk-br()         "Insert <br> at point" (interactive) (insert "<br>") (newline))
+(defun html-tools/mk-br()         "Insert <br> at point." (interactive) (insert "<br>") (newline))
 
 ;; word - region tags    ---------------------------------------------------------------------------------
 
-(defun html-tools/mk-strong()	  "Warp current element with <strong>"     (interactive) (html-tools/dwim-tag "strong"))
-(defun html-tools/mk-small()	  "Warp current element with <small>"      (interactive) (html-tools/dwim-tag "small"))
-(defun html-tools/mk-em()		  "Warp current element with <em>"         (interactive) (html-tools/dwim-tag "em"))
-(defun html-tools/mk-blockquote() "Warp current element with <blockquote>" (interactive) (web-mode-element-wrap "blockquote"))
+(defun html-tools/mk-strong()			"Warp current element with <strong>."     (interactive) (html-tools/dwim-tag "strong"))
+(defun html-tools/mk-small()			"Warp current element with <small>."      (interactive) (html-tools/dwim-tag "small"))
+(defun html-tools/mk-em()					"Warp current element with <em>."         (interactive) (html-tools/dwim-tag "em"))
+(defun html-tools/mk-blockquote() "Warp current element with <blockquote>." (interactive) (web-mode-element-wrap "blockquote"))
 
 ;; Paragraphs / headings ---------------------------------------------------------------------------------
 
 (defun html-tools/mk-paragraphs() "Convert region to paragraph." (interactive) (html-tools/dwim-tag "p"))
-(defun html-tools/mk-h1()		  "Convert region to heading 1." (interactive) (html-tools/dwim-tag "h1"))
-(defun html-tools/mk-h2()		  "Convert region to heading 2." (interactive) (html-tools/dwim-tag "h2"))
-(defun html-tools/mk-h3()		  "Convert region to heading 3." (interactive) (html-tools/dwim-tag "h3"))
-(defun html-tools/mk-h4()		  "Convert region to heading 4." (interactive) (html-tools/dwim-tag "h4"))
-(defun html-tools/mk-h5()		  "Convert region to heading 5." (interactive) (html-tools/dwim-tag "h5"))
-(defun html-tools/mk-h6()		  "Convert region to heading 6." (interactive) (html-tools/dwim-tag "h6"))
+(defun html-tools/mk-h1()					"Convert region to heading 1." (interactive) (html-tools/dwim-tag "h1"))
+(defun html-tools/mk-h2()					"Convert region to heading 2." (interactive) (html-tools/dwim-tag "h2"))
+(defun html-tools/mk-h3()					"Convert region to heading 3." (interactive) (html-tools/dwim-tag "h3"))
+(defun html-tools/mk-h4()					"Convert region to heading 4." (interactive) (html-tools/dwim-tag "h4"))
+(defun html-tools/mk-h5()					"Convert region to heading 5." (interactive) (html-tools/dwim-tag "h5"))
+(defun html-tools/mk-h6()					"Convert region to heading 6." (interactive) (html-tools/dwim-tag "h6"))
 
 (defun html-tools/linkify()
-  "Region to link"
+  "Region to link."
   (interactive)
   (let ((inicio (region-beginning)) (fin (region-end)))
 	(copy-to-register 'i  inicio fin)
@@ -129,8 +127,8 @@ TAG is the tag to add/replace."
 
 ;; Lists    ---------------------------------------------------------------------------------
 
-(defun html-tools/mk-ul() "Formats lines from active region to an unordered list" (interactive) (html-tools/make-list "ul"))
-(defun html-tools/mk-ol() "Formats lines from active region to an ordered list"   (interactive) (html-tools/make-list "ol"))
+(defun html-tools/mk-ul() "Formats lines from active region to an unordered list." (interactive) (html-tools/make-list "ul"))
+(defun html-tools/mk-ol() "Formats lines from active region to an ordered list."   (interactive) (html-tools/make-list "ol"))
 
 (defun html-tools/make-list(tag)
   (if (not (region-active-p)) 			; it only works on a region
@@ -218,6 +216,6 @@ TAG is the tag to add/replace."
 			html-tools-map))
 
 (add-hook 'web-mode-hook 'html-tools-mode)
-(provide 'html-tools)
 
-;;; html-tools ends here
+(provide 'html-tools)
+;;; html-tools.el ends here
