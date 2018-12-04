@@ -150,7 +150,7 @@ TAG is the tag to add/replace."
 ;; 		))) ;defun
 
 (defun html-tools/clean-vars()
-	""
+	"Clear vars."
 	(setq html-tools-elem-pos       nil
 				html-tools-elem-beg       nil
 				html-tools-elem-end       nil
@@ -160,7 +160,7 @@ TAG is the tag to add/replace."
 	)
 
 (defun html-tools/set-references()
-	""
+	"Set references from current element."
 	(setq html-tools-elem-pos (point)) 											 ; punto en el que se encuentra el cursor al iniciar el comando
 
 	(html-tools/bound-paragraph)
