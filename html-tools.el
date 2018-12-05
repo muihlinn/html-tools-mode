@@ -19,17 +19,39 @@
 
 ;; VARIABLES    -------------------------------------------------------
 
-(defvar html-tools-words
-  '("strong" "small" "em" "b" "i"))
-
-(defvar html-tools-paragraphs
-  '("h1" "h2" "h3" "h4" "h5" "h6" "p" "blockquote"))
-
-(defvar html-tools-lists
-  '("ol" "ul"))
-
 (defvar html-tools-containers
   '("body" "article" "aside" "main" "header" "footer" "section" "div" ))
+
+(defvar html-tools-br  "br")
+
+(defvar html-tools-strong "strong")
+(defvar html-tools-em     "em")
+(defvar html-tools-small  "small")
+
+(defvar html-tools-words (list html-tools-strong html-tools-small html-tools-em))
+
+(defvar html-tools-h1 "h1" "Heading level 1." )
+(defvar html-tools-h2 "h2" "Heading level 2." )
+(defvar html-tools-h3 "h3" "Heading level 3." )
+(defvar html-tools-h4 "h4" "Heading level 4." )
+(defvar html-tools-h5 "h5" "Heading level 5." )
+(defvar html-tools-h6 "h6" "Heading level 6." )
+
+(defvar html-tools-p      "p")
+(defvar html-tools-blockquote "blockquote")
+
+(defvar html-tools-paragraphs (list html-tools-h1
+																html-tools-h2 html-tools-h3
+																html-tools-h4 html-tools-h5 html-tools-h6
+																html-tools-p html-tools-blockquote))
+
+(defvar html-tools-ol "ol")
+(defvar html-tools-ul "ul")
+(defvar html-tools-li "li")
+
+(defvar html-tools-lists (list html-tools-ol html-tools-ul))
+
+(defvar footnotes-section-regexp "section id=\"footnotes")
 
 (defvar html-tools-elem-pos       nil)
 (defvar html-tools-elem-beg       nil)
@@ -37,6 +59,7 @@
 (defvar html-tools-parent-tag     nil)
 (defvar html-tools-parent-element nil)
 (defvar html-tools-current-tag    nil)
+
 
 ;; CORE UTILITIES ------------------------------------------------------
 
@@ -203,25 +226,27 @@ TAG is the tag to add/replace."
 
 ;; Line breaks           ---------------------------------------------------------------------------------
 
-(defun html-tools/mk-br()         "Insert <br> at point." (interactive) (insert "<br>") (newline))
+(define-skeleton html-tools/break-line "Skeleton for a line break." nil "<"html-tools-br">\n")
+(defun html-tools/mk-br()     "Insert <br> at point." (interactive) (html-tools/break-line))
 
 ;; word - region tags    ---------------------------------------------------------------------------------
 
-(defun html-tools/mk-strong()	"Warp current element with <strong>." (interactive) (html-tools/dwim-tag "strong"))
-(defun html-tools/mk-small()	"Warp current element with <small>."  (interactive) (html-tools/dwim-tag "small"))
-(defun html-tools/mk-em()			"Warp current element with <em>."     (interactive) (html-tools/dwim-tag "em"))
+(defun html-tools/mk-strong()	"Warp current element with <strong>." (interactive) (html-tools/dwim-tag html-tools-strong))
+(defun html-tools/mk-small()	"Warp current element with <small>."  (interactive) (html-tools/dwim-tag html-tools-small))
+(defun html-tools/mk-em()			"Warp current element with <em>."     (interactive) (html-tools/dwim-tag html-tools-em))
 
 ;; Paragraphs / headings ---------------------------------------------------------------------------------
 
-(defun html-tools/mk-blockquote() "Warp current element with <blockquote>." (interactive) (web-mode-element-wrap "blockquote"))
-(defun html-tools/mk-paragraphs() "Convert region to paragraph."            (interactive) (html-tools/dwim-tag "p"))
+(defun html-tools/mk-blockquote() "Warp current element with <blockquote>." (interactive) (web-mode-element-wrap html-tools-blockquote))
+(defun html-tools/mk-paragraphs() "Convert region to paragraph."            (interactive) (html-tools/dwim-tag html-tools-p))
 
-(defun html-tools/mk-h1()	"Convert region to heading 1." (interactive) (html-tools/dwim-tag "h1"))
-(defun html-tools/mk-h2()	"Convert region to heading 2." (interactive) (html-tools/dwim-tag "h2"))
-(defun html-tools/mk-h3()	"Convert region to heading 3." (interactive) (html-tools/dwim-tag "h3"))
-(defun html-tools/mk-h4()	"Convert region to heading 4." (interactive) (html-tools/dwim-tag "h4"))
-(defun html-tools/mk-h5()	"Convert region to heading 5." (interactive) (html-tools/dwim-tag "h5"))
-(defun html-tools/mk-h6()	"Convert region to heading 6." (interactive) (html-tools/dwim-tag "h6"))
+(defun html-tools/mk-h1()	"Convert region to heading 1." (interactive) (html-tools/dwim-tag html-tools-h1))
+(defun html-tools/mk-h2()	"Convert region to heading 2." (interactive) (html-tools/dwim-tag html-tools-h2))
+(defun html-tools/mk-h3()	"Convert region to heading 3." (interactive) (html-tools/dwim-tag html-tools-h3))
+(defun html-tools/mk-h4()	"Convert region to heading 4." (interactive) (html-tools/dwim-tag html-tools-h4))
+(defun html-tools/mk-h5()	"Convert region to heading 5." (interactive) (html-tools/dwim-tag html-tools-h5))
+(defun html-tools/mk-h6()	"Convert region to heading 6." (interactive) (html-tools/dwim-tag html-tools-h6))
+
 
 (defun html-tools/mk-a()
 	"Make a link from region if active, next word if not."
@@ -233,8 +258,8 @@ TAG is the tag to add/replace."
 
 ;; Lists    ---------------------------------------------------------------------------------
 
-(defun html-tools/mk-ul() "Formats lines from active region to an unordered list." (interactive) (html-tools/make-list "ul"))
-(defun html-tools/mk-ol() "Formats lines from active region to an ordered list."   (interactive) (html-tools/make-list "ol"))
+(defun html-tools/mk-ul() "Formats lines from active region to an unordered list." (interactive) (html-tools/make-list html-tools-ul))
+(defun html-tools/mk-ol() "Formats lines from active region to an ordered list."   (interactive) (html-tools/make-list html-tools-ol))
 
 (defun html-tools/make-list(tag)
   (if (not (region-active-p)) 			; it only works on a region
