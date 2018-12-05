@@ -21,6 +21,30 @@
 
 (defvar html-tools-containers
   '("body" "article" "aside" "main" "header" "footer" "section" "div" ))
+(defvar html-tools-words (list html-tools-strong html-tools-small html-tools-em))
+
+(defvar html-tools-h1 "h1" "Heading level 1." )
+(defvar html-tools-h2 "h2" "Heading level 2." )
+(defvar html-tools-h3 "h3" "Heading level 3." )
+(defvar html-tools-h4 "h4" "Heading level 4." )
+(defvar html-tools-h5 "h5" "Heading level 5." )
+(defvar html-tools-h6 "h6" "Heading level 6." )
+
+(defvar html-tools-p      "p")
+(defvar html-tools-blockquote "blockquote")
+
+(defvar html-tools-paragraphs (list html-tools-h1
+																html-tools-h2 html-tools-h3
+																html-tools-h4 html-tools-h5 html-tools-h6
+																html-tools-p html-tools-blockquote))
+
+(defvar html-tools-ol "ol")
+(defvar html-tools-ul "ul")
+(defvar html-tools-li "li")
+
+(defvar html-tools-lists (list html-tools-ol html-tools-ul))
+
+(defvar footnotes-section-regexp "section id=\"footnotes")
 
 (defvar html-tools-br  "br")
 
@@ -59,6 +83,7 @@
 (defvar html-tools-parent-tag     nil)
 (defvar html-tools-parent-element nil)
 (defvar html-tools-current-tag    nil)
+
 
 ;; CORE UTILITIES ------------------------------------------------------
 
