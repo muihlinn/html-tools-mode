@@ -41,9 +41,9 @@
 (defvar html-tools-blockquote "blockquote")
 
 (defvar html-tools-paragraphs (list html-tools-h1
-																html-tools-h2 html-tools-h3
-																html-tools-h4 html-tools-h5 html-tools-h6
-																html-tools-p html-tools-blockquote))
+																		html-tools-h2 html-tools-h3
+																		html-tools-h4 html-tools-h5 html-tools-h6
+																		html-tools-p html-tools-blockquote))
 
 (defvar html-tools-ol "ol")
 (defvar html-tools-ul "ul")
@@ -81,9 +81,9 @@ No spaces, newlines, etc."
 		))
 
 (defun html-tools/bound-word()
-  "Word at point to region."
+	"Word at point to region."
 	(interactive)
-  (let (bounds)
+	(let (bounds)
 		(setq bounds (bounds-of-thing-at-point 'word))
 		(goto-char (car bounds))
 		(push-mark nil t t)
@@ -115,9 +115,9 @@ No spaces, newlines, etc."
 
 
 (defun html-tools/dwim-tag (tag)
-  "Find the bounds of element and apply element warp.
+	"Find the bounds of element and apply element warp.
 TAG is the tag to add/replace."
-  (let ( bounds )
+	(let ( bounds )
 
 		;; when region is active, only wrapping is needed
 		(when (region-active-p) (web-mode-element-wrap tag))
@@ -160,7 +160,7 @@ TAG is the tag to add/replace."
 ;; 					 (html-tools/bound-paragraph)
 ;; 					 (message "4: %s" html-tools-current-tag)
 ;; 					 (read-from-minibuffer "... ")
-;; 					 ;; TODO: misaligned tags
+;; 					 ;; misaligned tags
 ;; 					 ;; ----------------------------------------------------
 ;; 					 ;; IF paragraph starts with a tag, wrap tags are alone,
 ;; 					 ;; unlike inline when not. why?
@@ -212,7 +212,7 @@ TAG is the tag to add/replace."
 	)
 
 (defun html-tools/get-parent( )
-	""
+	"TODO:."
 	(save-excursion
 		(while (not (or
 								 (member (web-mode-element-tag-name) html-tools-paragraphs)
@@ -316,24 +316,27 @@ REVERSE - Jump to previous position in skeleton"
 (defun html-tools/mk-ul() "Formats lines from active region to an unordered list." (interactive) (html-tools/make-list html-tools-ul))
 (defun html-tools/mk-ol() "Formats lines from active region to an ordered list."   (interactive) (html-tools/make-list html-tools-ol))
 
-(defun html-tools/make-list(tag)
-  (if (not (region-active-p)) 			; it only works on a region
-			(message "Lists can be only formatted from a region")
-		(narrow-to-region (region-beginning) (region-end))
-		(save-excursion
-			(save-restriction
-				(goto-char (point-min))
-				(while (re-search-forward "^\\([0-9]+[\.\-]+\\)?[[:blank:]]+" nil t)
-					(replace-match "" nil nil))
-				(goto-char (point-min))
-				(while (re-search-forward "^\\(.+$\\)" nil t)
-					(replace-match  "<li>\\1</li>" nil nil))
-				(mark-paragraph)
-				(web-mode-element-wrap tag))
-			(delete-matching-lines "^$" (point-min) (point-max)))
-		(widen)
-		(web-mode-buffer-indent)))
+;; TODO: revamp list creation
 
+(defun html-tools/make-list(tag)
+	"TODO:.
+TAG."
+	(unless (region-active-p) 			; it only works on a region
+		(message "Lists can be only formatted from a region"))
+	(narrow-to-region (region-beginning) (region-end))
+	(save-excursion
+		(save-restriction
+			(goto-char (point-min))
+			(while (re-search-forward "^\\([0-9]+[\.\-]+\\)?[[:blank:]]+" nil t)
+				(replace-match "" nil nil))
+			(goto-char (point-min))
+			(while (re-search-forward "^\\(.+$\\)" nil t)
+				(replace-match  "<li>\\1</li>" nil nil))
+			(mark-paragraph)
+			(web-mode-element-wrap tag))
+		(delete-matching-lines "^$" (point-min) (point-max)))
+	(widen)
+	(web-mode-buffer-indent))
 
 ;; Footnotes    ---------------------------------------------------------------------------------
 
@@ -434,9 +437,9 @@ Requires working with a selection."
 ;; Minor mode definition    ---------------------------------------------------------------------------------
 
 (define-minor-mode html-tools-mode
-  "Easy formatting of html code."
-  :lighter " html"
-  :keymap (let ((html-tools-map (make-sparse-keymap)))
+	"Easy formatting of html code."
+	:lighter " html"
+	:keymap (let ((html-tools-map (make-sparse-keymap)))
 						;; line breaks           -------------------------------------------------------
 						(define-key html-tools-map [S-return]  'html-tools/mk-br)
 						;; word - region tags    -------------------------------------------------------
