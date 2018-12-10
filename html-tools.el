@@ -337,35 +337,99 @@ REVERSE - Jump to previous position in skeleton"
 
 ;; Footnotes    ---------------------------------------------------------------------------------
 
-(defun html-tools/make-footnote-reference()
-  ""
-  (interactive)
-  (let ((inicio (region-beginning)) (fin (region-end)))
-		(copy-to-register 'i inicio fin)
-		(narrow-to-region inicio fin)
-		(save-restriction
-			(goto-char (point-min))
-			(save-excursion
-				(insert (concat "<sup><a href=\"#ft" (get-register 'i) "\" id=\"" (get-register 'i) "\">"))
-				(goto-char (point-max))
-				(insert "</a></sup>")))
-		(widen)))
+;; TODO: keep track of footnote number, if any
 
-(defun html-tools/make-footnote()
-  ""
-  (interactive)
-  (let ((inicio (region-beginning)) (fin (region-end)))
-		(copy-to-register 'i inicio fin)
-		(narrow-to-region inicio fin)
+(define-skeleton html-tools/footnote-container
+	"Skeleton for footnotes div."
+	nil
+	>"<section id=\"footnotes\">\n\n"
+	> _
+	>"\n\n"
+	>"</section>\n"
+	)
+
+(define-skeleton html-tools/footnote-reference
+	"Skeleton for footnote reference."
+	nil
+	'(setq v1 (int-to-string 1))
+	"<sup><a href=\"#ft_" v1 "\">" v1 "</a></sup> "
+	)
+
+(define-skeleton html-tools/footnote-body
+	"Skeleton for footnote body."
+	nil
+	'(setq v1 (int-to-string 1))
+	>"<div id=\"ft_" v1 "\">\n\n"
+	>"<span class=\"ft_index \">"v1"</span>\n"
+	> _
+	>"\n\n"
+	>"</div>"
+	)
+
+
+;; TODO: should footnotes be inserted at the end of body, main, article ...?
+
+(defun html-tools/insert-footnotes-container()
+	"Insert footnotes container at the end of body."
+	(interactive)
+	(save-excursion
+		;; find container parent which is semantically significant
+		;; by now, just body
+
+		;; TODO if element body doesn't exist, place it at the EOF
+
+		(while (not (equal (web-mode-element-tag-name) "body"))
+			(web-mode-element-parent))
+
+		(web-mode-tag-match)							              ; goto just before its closing tag
+		(html-tools/footnote-container)				          ; insert skeleton
+		)
+	)
+
+;; TODO: reindent, m-q
+
+(defun html-tools/mk-footnote()
+	"Insert footnote reference at point.
+Requires working with a selection."
+	(interactive)
+	(let (next-footnote-pos footnote rb re)
 		(save-excursion
-			(goto-char (point-min))
-			(save-restriction
-				(insert (concat "<p id=\"ft" (get-register 'i) "\"><a href=\"#" (get-register 'i) "\">"))
-				(goto-char (point-max))
-				(insert "</a>"))
-			(widen)
-			(end-of-line)
-			(insert "</p>"))))
+
+			(if (region-active-p)
+					(progn
+						(setq rb (region-beginning)						   ; record region
+									re (region-end))
+						(setq footnote (buffer-substring rb re)) ; save region
+						(kill-region rb re))
+
+				(setq footnote ""))
+
+			(html-tools/footnote-reference)							   ; insert skeleton
+
+			;; goto last point inside section#footnotes
+			;; insert footnote [from region].
+
+			(setq next-footnote-pos (html-tools/find-footnotes-container))
+			(message "%s" next-footnote-pos)
+			(goto-char next-footnote-pos)
+			(html-tools/footnote-body)
+			(insert footnote))
+		)
+	)
+
+;; TODO: debería poderse encontrar por algún método estándar, no buscando section id="footnotes"
+
+(defun html-tools/find-footnotes-container()
+	"Find footnotes container."
+	(interactive)
+
+	(if (re-search-forward footnotes-section-regexp nil t)
+			(progn
+				(web-mode-tag-match)									     ; goto end of tag
+				(point))
+		(progn									                       ; Si no existe contenedor de notas, crear
+			(html-tools/insert-footnotes-container)
+			(html-tools/find-footnotes-container))))
 
 ;; Minor mode definition    ---------------------------------------------------------------------------------
 
