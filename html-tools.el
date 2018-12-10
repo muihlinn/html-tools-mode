@@ -247,14 +247,69 @@ TAG is the tag to add/replace."
 (defun html-tools/mk-h5()	"Convert region to heading 5." (interactive) (html-tools/dwim-tag html-tools-h5))
 (defun html-tools/mk-h6()	"Convert region to heading 6." (interactive) (html-tools/dwim-tag html-tools-h6))
 
+;; Links                 ---------------------------------------------------------------------------------
+
+(define-skeleton html-tools/link
+	"Skeleton for a link tag."
+	nil
+	'(setq v1 href v2 content)
+	"<a href=\"" - @ v1 "\" target=\""@"_blank\">" @ v2"</a> ")
 
 (defun html-tools/mk-a()
 	"Make a link from region if active, next word if not."
 	(interactive)
-	(let ((content (html-tools/select-target))) ;TODO: content no puede tener espacios en blanco
-		(save-excursion
-			(when (region-active-p) (kill-region (region-beginning)(region-end))) ; it's suppossed that it's always active as this point
-			(insert (concat " <a href=\"" content "\" target=\"_blank\">" content "</a>")))))
+	(let ( href content (data (html-tools/select-target)))
+		(when (region-active-p) (kill-region (region-beginning)(region-end))) ; it's suppossed that it's always active as this point
+
+		;; TODO: procesar data para separar [si hubiera] urls y texto.
+
+		(setq href "#" content data)
+																				; (insert (concat " <a href=\"" content "\" target=\"_blank\">" content "</a>"))
+		(html-tools/link)
+		))
+
+
+;; Taken from: https://www.emacswiki.org/emacs/SkeletonMode ---------------------------
+
+(add-hook 'skeleton-end-hook 'skeleton-make-markers)
+
+(defvar *skeleton-markers* nil
+  "Markers for locations saved in skeleton-positions.")
+
+(defun skeleton-make-markers ()
+	"TODO: doc."
+	(while *skeleton-markers*
+    (set-marker (pop *skeleton-markers*) nil))
+  (setq *skeleton-markers*
+				(mapcar 'copy-marker (reverse skeleton-positions))))
+
+(defun html-tools/skeleton-next-position (&optional reverse)
+  "Jump to next position in skeleton.
+REVERSE - Jump to previous position in skeleton"
+  (interactive "P")
+  (let* ((positions (mapcar 'marker-position *skeleton-markers*))
+				 (positions (if reverse (reverse positions) positions))
+				 (comp (if reverse '> '<))
+				 pos)
+    (when positions
+      (if (catch 'break
+						(while (setq pos (pop positions))
+							(when (funcall comp (point) pos)
+								(throw 'break t))))
+					(goto-char pos)
+				(goto-char (marker-position
+										(car *skeleton-markers*)))))))
+
+;; End of taken code :-)  -------------------------------------------------------------
+
+;; Just because I can't bring myself to have a lambda() into keybinding
+
+(defun html-tools/skeleton-prior-position()
+	"Jump to previous position in skeleton."
+	(interactive)
+	(html-tools/skeleton-next-position t))
+
+
 
 ;; Lists    ---------------------------------------------------------------------------------
 
@@ -343,6 +398,11 @@ TAG is the tag to add/replace."
 
 						(define-key html-tools-map (kbd "H-f r") 'html-tools/make-footnote-reference)
 						(define-key html-tools-map (kbd "H-f f") 'html-tools/make-footnote)
+
+						;; move between skeleton positions
+
+						(define-key html-tools-map (kbd "H-<next>")  'html-tools/skeleton-next-position)
+						(define-key html-tools-map (kbd "H-<prior>") 'html-tools/skeleton-prior-position)
 
 						html-tools-map))
 
