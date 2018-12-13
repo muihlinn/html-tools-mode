@@ -258,8 +258,19 @@ TAG is the tag to be used."
 	)
 
 
+(defun html-tools/get-valid-parent( )
+	"Look up element parent until find a paragraph or container which can be used."
+	(interactive)
+	(let (elem)
+		(setq elem (web-mode-element-parent)
+					html-tools-parent-tag (web-mode-element-tag-name))
 
+		(cond ((eq elem nil)
+					 (setq html-tools-parent-tag nil))
 
+					((or (eq (web-mode-element-tag-name) nil)
+							 (member (web-mode-element-tag-name) html-tools-inline))
+					 (html-tools/get-valid-parent)))))
 
 
 ;; Line breaks           ---------------------------------------------------------------------------------
