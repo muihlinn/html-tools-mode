@@ -203,37 +203,43 @@ No spaces, newlines, etc."
 TAG is the tag to add/replace."
 	(let ( bounds )
 
+		(setq html-tools-elem-pos (point))
+
 		;; when region is active, only wrapping is needed
 		(when (region-active-p) (web-mode-element-wrap tag))
 
-		(when (not (region-active-p))                     ;;  check if region is NOT active
-			;; (message "%s" "no hay región activa")
+		(when (not (region-active-p))                       ;  check if region is NOT active
 
-			(when (member tag html-tools-words)	            ;; Es una tag para palabras
+			(when (member tag html-tools-words)	              ; it is a word tag
 				(html-tools/bound-word)
 				(web-mode-element-wrap tag))
 
-			(when (member tag html-tools-paragraphs)        ;; When tag is a paragraph tag
-				;; (message "1: %s" "procesando tag de párrafo")
-				(html-tools/set-references)				            ;; set element references
-				(goto-char html-tools-elem-beg)
-				;; (read-from-minibuffer "...")
+			(when (member tag html-tools-paragraphs)          ; When tag is a paragraph tag
+				(html-tools/get-valid-parent)				            ; find the inmediate parent which fits the bill
 
-				(cond ((not (web-mode-element-tag-name))
-							 (progn
-								 (push-mark html-tools-elem-beg t t)
-								 (goto-char html-tools-elem-end)
-								 (web-mode-element-wrap tag)
-								 (when (region-active-p) (push-mark nil t nil))
-								 ))
+				(cond
+				 ((not (web-mode-element-tag-name))             ; element do not have an enclosing tag
+					(html-tools/tag-orphan-paragraph tag)
+					)
 
-							((web-mode-element-tag-name)
-							 (progn
-								 (message "%s" (web-mode-element-tag-name))
-								 (goto-char html-tools-elem-beg)
-								 (web-mode-element-rename tag))
-							 ))))
-		(html-tools/clean-vars)))
+				 ((not html-tools-parent-tag)                   ; it's an orphan element
+					(if (and (web-mode-element-tag-name)
+									 (not (member (web-mode-element-tag-name) html-tools-inline)))
+							(web-mode-element-rename tag)             ; Orphan, but not anonymous
+						(html-tools/tag-orphan-paragraph tag)))	    ; Orphan and anonymous
+
+
+				 ((web-mode-element-tag-name)		                ; we're over a tag
+
+					;; TODO: recheck how this works, unneeded recursion?.
+					(if (member (web-mode-element-tag-name) html-tools-inline)
+							(progn (html-tools/get-valid-parent)
+										 (html-tools/dwim-tag tag))
+						(web-mode-element-rename tag))))
+
+				(goto-char html-tools-elem-pos)
+				(html-tools/clean-vars)))))
+
 
 (defun html-tools/tag-orphan-paragraph (tag)
 	"Tag an orphan paragraph.
