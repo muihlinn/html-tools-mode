@@ -46,8 +46,6 @@
 
 (defvar footnotes-section-regexp "section id=\"footnotes")
 
-
-
 (defvar html-tools-link   "a")
 (defvar html-tools-em     "em")
 (defvar html-tools-strong "strong")
@@ -77,7 +75,6 @@
 (defvar html-tools-span		"span")
 (defvar html-tools-br			"br")
 (defvar html-tools-wbr		"wbr")
-
 
 (defvar html-tools-words (list
 													html-tools-link
@@ -139,9 +136,7 @@
 (defvar html-tools-elem-beg       nil)
 (defvar html-tools-elem-end       nil)
 (defvar html-tools-parent-tag     nil)
-(defvar html-tools-parent-element nil)
 (defvar html-tools-current-tag    nil)
-
 
 ;; CORE UTILITIES ------------------------------------------------------
 
@@ -232,26 +227,6 @@ TAG is the tag to add/replace."
 							 ))))
 		(html-tools/clean-vars)))
 
-;; 			 (if (and (member html-tools-parent-tag html-tools-containers)
-;; 								(member (web-mode-element-tag-name elem) html-tools-paragraphs))
-;; 					 (progn
-;; 						 (message "3: %s" parent)
-;; 				 (progn                                      ;; Wrap element next to or around point with the paragraph tag
-;; 					 (goto-char elem_pos)
-;; 					 (html-tools/bound-paragraph)
-;; 					 (message "4: %s" html-tools-current-tag)
-;; 					 (read-from-minibuffer "... ")
-;; 					 ;; misaligned tags
-;; 					 ;; ----------------------------------------------------
-;; 					 ;; IF paragraph starts with a tag, wrap tags are alone,
-;; 					 ;; unlike inline when not. why?
-;; 					 (when (buffer-narrowed-p)
-;; 						 (indent-region (point-min)(point-max))
-;; 						 (goto-char (point-max))
-;; 						 (widen)))
-;; 				 )) ; when
-;; 		 ;; Wrap element next to or around point with the word tag
-;; 		))) ;defun
 
 (defun html-tools/clean-vars()
 	"Clear vars."
@@ -259,7 +234,6 @@ TAG is the tag to add/replace."
 				html-tools-elem-beg       nil
 				html-tools-elem-end       nil
 				html-tools-parent-tag     nil
-				html-tools-parent-element nil
 				html-tools-current-tag    nil)
 	)
 
@@ -268,22 +242,7 @@ TAG is the tag to add/replace."
 	(setq html-tools-elem-pos (point)) 											 ; punto en el que se encuentra el cursor al iniciar el comando
 
 	(html-tools/bound-paragraph)
-	;; (save-excursion
 
-	;; 	;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	;; 	(while (not (or
-	;; 							 (member (web-mode-element-tag-name) html-tools-paragraphs)
-	;; 							 (member (web-mode-element-tag-name) html-tools-containers)))
-	;; 		(web-mode-element-parent)
-	;; 		(message "2: %s" (web-mode-element-tag-name))
-	;; 		)
-
-	;; 	(setq html-tools-parent-element (web-mode-element-parent))
-	;; 	(setq html-tools-parent-tag (web-mode-element-tag-name)))
-	;; 	;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-	;; (message "%s" html-tools-parent-element)
-	;; (message "%s" html-tools-parent-tag)
 
 	(widen)
 	(deactivate-mark)
@@ -389,7 +348,6 @@ REVERSE - Jump to previous position in skeleton"
 	"Jump to previous position in skeleton."
 	(interactive)
 	(html-tools/skeleton-next-position t))
-
 
 
 ;; Lists    ---------------------------------------------------------------------------------
