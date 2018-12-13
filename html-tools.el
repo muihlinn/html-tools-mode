@@ -190,6 +190,14 @@ No spaces, newlines, etc."
 			 			(progn (html-tools/bound-word)
 			 						 (buffer-substring (region-beginning)(region-end)))))))
 
+;; TODO: unused
+(define-skeleton html-tools/container
+	"Skeleton for a container."
+	nil
+	'(setq v1 tag)
+	>"\n<"tag">"_"</"tag">\n\n")
+
+
 (defun html-tools/dwim-tag (tag)
 	"Find the bounds of element and apply element warp.
 TAG is the tag to add/replace."
