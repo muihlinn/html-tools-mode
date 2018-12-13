@@ -245,31 +245,9 @@ TAG is the tag to add/replace."
 				html-tools-current-tag    nil)
 	)
 
-(defun html-tools/set-references()
-	"Set references from current element."
-	(setq html-tools-elem-pos (point)) 											 ; punto en el que se encuentra el cursor al iniciar el comando
-
-	(html-tools/bound-paragraph)
 
 
-	(widen)
-	(deactivate-mark)
-	(message "%s" html-tools-elem-pos)
-	(message "%s" html-tools-elem-beg)
-	(message "%s" html-tools-elem-end)
-	)
 
-(defun html-tools/get-parent( )
-	"TODO:."
-	(save-excursion
-		(while (not (or
-								 (member (web-mode-element-tag-name) html-tools-paragraphs)
-								 (member (web-mode-element-tag-name) html-tools-containers)))
-			(web-mode-element-parent)
-			(message "2: %s" (web-mode-element-tag-name))
-			)
-		(setq html-tools-parent-element (web-mode-element-parent))
-		(setq html-tools-parent-tag (web-mode-element-tag-name))))
 
 
 ;; Line breaks           ---------------------------------------------------------------------------------
