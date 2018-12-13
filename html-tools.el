@@ -235,6 +235,18 @@ TAG is the tag to add/replace."
 							 ))))
 		(html-tools/clean-vars)))
 
+(defun html-tools/tag-orphan-paragraph (tag)
+	"Tag an orphan paragraph.
+Work over automatic selections.  Not to be used directly.
+TAG is the tag to be used."
+	(html-tools/bound-paragraph)
+	(push-mark (html-tools/first-of-it))
+	(goto-char (html-tools/last-of-it))
+	(web-mode-element-wrap tag)
+	(widen)
+	(when (region-active-p) (push-mark nil t nil))
+	(goto-char html-tools-elem-pos)
+	)
 
 (defun html-tools/clean-vars()
 	"Clear vars."
