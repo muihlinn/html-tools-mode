@@ -46,13 +46,71 @@
 
 (defvar footnotes-section-regexp "section id=\"footnotes")
 
-(defvar html-tools-br  "br")
 
-(defvar html-tools-strong "strong")
+
+(defvar html-tools-link   "a")
 (defvar html-tools-em     "em")
+(defvar html-tools-strong "strong")
 (defvar html-tools-small  "small")
+(defvar html-tools-s			"s")
+(defvar html-tools-cite		"cite")
+(defvar html-tools-q			"q")
+(defvar html-tools-dfn		"dfn")
+(defvar html-tools-abbr		"abbr")
+(defvar html-tools-data		"data")
+(defvar html-tools-time		"time")
+(defvar html-tools-code		"code")
+(defvar html-tools-var		"var")
+(defvar html-tools-samp		"samp")
+(defvar html-tools-kbd		"kbd")
+(defvar html-tools-sub		"sub")
+(defvar html-tools-sup		"sup")
+(defvar html-tools-i			"i")
+(defvar html-tools-b			"b")
+(defvar html-tools-u			"u")
+(defvar html-tools-mark		"mark")
+(defvar html-tools-ruby		"ruby")
+(defvar html-tools-rt			"rt")
+(defvar html-tools-rp			"rp")
+(defvar html-tools-bdi		"bdi")
+(defvar html-tools-bdo		"bdo")
+(defvar html-tools-span		"span")
+(defvar html-tools-br			"br")
+(defvar html-tools-wbr		"wbr")
 
-(defvar html-tools-words (list html-tools-strong html-tools-small html-tools-em))
+
+(defvar html-tools-words (list
+													html-tools-link
+													html-tools-em
+													html-tools-strong
+													html-tools-small
+													html-tools-s
+													html-tools-cite
+													html-tools-q
+													html-tools-dfn
+													html-tools-abbr
+													html-tools-data
+													html-tools-time
+													html-tools-code
+													html-tools-var
+													html-tools-samp
+													html-tools-kbd
+													html-tools-sub
+													html-tools-sup
+													html-tools-i
+													html-tools-b
+													html-tools-u
+													html-tools-mark
+													html-tools-ruby
+													html-tools-rt
+													html-tools-rp
+													html-tools-bdi
+													html-tools-bdo
+													html-tools-span
+													html-tools-br
+													html-tools-wbr))
+
+(defvar html-tools-inline html-tools-words)
 
 (defvar html-tools-h1 "h1" "Heading level 1." )
 (defvar html-tools-h2 "h2" "Heading level 2." )
