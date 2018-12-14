@@ -22,13 +22,91 @@
 (defvar html-tools-containers
   '("body" "article" "aside" "main" "header" "footer" "section" "div" ))
 
-(defvar html-tools-br  "br")
+(defvar html-tools-h1 "h1" "Heading level 1." )
+(defvar html-tools-h2 "h2" "Heading level 2." )
+(defvar html-tools-h3 "h3" "Heading level 3." )
+(defvar html-tools-h4 "h4" "Heading level 4." )
+(defvar html-tools-h5 "h5" "Heading level 5." )
+(defvar html-tools-h6 "h6" "Heading level 6." )
 
-(defvar html-tools-strong "strong")
+(defvar html-tools-p      "p")
+(defvar html-tools-blockquote "blockquote")
+
+(defvar html-tools-paragraphs (list html-tools-h1
+																html-tools-h2 html-tools-h3
+																html-tools-h4 html-tools-h5 html-tools-h6
+																html-tools-p html-tools-blockquote))
+
+(defvar html-tools-ol "ol")
+(defvar html-tools-ul "ul")
+(defvar html-tools-li "li")
+
+(defvar html-tools-lists (list html-tools-ol html-tools-ul))
+
+(defvar footnotes-section-regexp "section id=\"footnotes")
+
+(defvar html-tools-link   "a")
 (defvar html-tools-em     "em")
+(defvar html-tools-strong "strong")
 (defvar html-tools-small  "small")
+(defvar html-tools-s			"s")
+(defvar html-tools-cite		"cite")
+(defvar html-tools-q			"q")
+(defvar html-tools-dfn		"dfn")
+(defvar html-tools-abbr		"abbr")
+(defvar html-tools-data		"data")
+(defvar html-tools-time		"time")
+(defvar html-tools-code		"code")
+(defvar html-tools-var		"var")
+(defvar html-tools-samp		"samp")
+(defvar html-tools-kbd		"kbd")
+(defvar html-tools-sub		"sub")
+(defvar html-tools-sup		"sup")
+(defvar html-tools-i			"i")
+(defvar html-tools-b			"b")
+(defvar html-tools-u			"u")
+(defvar html-tools-mark		"mark")
+(defvar html-tools-ruby		"ruby")
+(defvar html-tools-rt			"rt")
+(defvar html-tools-rp			"rp")
+(defvar html-tools-bdi		"bdi")
+(defvar html-tools-bdo		"bdo")
+(defvar html-tools-span		"span")
+(defvar html-tools-br			"br")
+(defvar html-tools-wbr		"wbr")
 
-(defvar html-tools-words (list html-tools-strong html-tools-small html-tools-em))
+(defvar html-tools-words (list
+													html-tools-link
+													html-tools-em
+													html-tools-strong
+													html-tools-small
+													html-tools-s
+													html-tools-cite
+													html-tools-q
+													html-tools-dfn
+													html-tools-abbr
+													html-tools-data
+													html-tools-time
+													html-tools-code
+													html-tools-var
+													html-tools-samp
+													html-tools-kbd
+													html-tools-sub
+													html-tools-sup
+													html-tools-i
+													html-tools-b
+													html-tools-u
+													html-tools-mark
+													html-tools-ruby
+													html-tools-rt
+													html-tools-rp
+													html-tools-bdi
+													html-tools-bdo
+													html-tools-span
+													html-tools-br
+													html-tools-wbr))
+
+(defvar html-tools-inline html-tools-words)
 
 (defvar html-tools-h1 "h1" "Heading level 1." )
 (defvar html-tools-h2 "h2" "Heading level 2." )
@@ -57,9 +135,7 @@
 (defvar html-tools-elem-beg       nil)
 (defvar html-tools-elem-end       nil)
 (defvar html-tools-parent-tag     nil)
-(defvar html-tools-parent-element nil)
 (defvar html-tools-current-tag    nil)
-
 
 ;; CORE UTILITIES ------------------------------------------------------
 
@@ -113,64 +189,69 @@ No spaces, newlines, etc."
 			 			(progn (html-tools/bound-word)
 			 						 (buffer-substring (region-beginning)(region-end)))))))
 
+;; TODO: unused
+(define-skeleton html-tools/container
+	"Skeleton for a container."
+	nil
+	'(setq v1 tag)
+	>"\n<"tag">"_"</"tag">\n\n")
+
 
 (defun html-tools/dwim-tag (tag)
 	"Find the bounds of element and apply element warp.
 TAG is the tag to add/replace."
 	(let ( bounds )
 
+		(setq html-tools-elem-pos (point))
+
 		;; when region is active, only wrapping is needed
 		(when (region-active-p) (web-mode-element-wrap tag))
 
-		(when (not (region-active-p))                     ;;  check if region is NOT active
-			;; (message "%s" "no hay región activa")
+		(when (not (region-active-p))                       ;  check if region is NOT active
 
-			(when (member tag html-tools-words)	            ;; Es una tag para palabras
+			(when (member tag html-tools-words)	              ; it is a word tag
 				(html-tools/bound-word)
 				(web-mode-element-wrap tag))
 
-			(when (member tag html-tools-paragraphs)        ;; When tag is a paragraph tag
-				;; (message "1: %s" "procesando tag de párrafo")
-				(html-tools/set-references)				            ;; set element references
-				(goto-char html-tools-elem-beg)
-				;; (read-from-minibuffer "...")
+			(when (member tag html-tools-paragraphs)          ; When tag is a paragraph tag
+				(html-tools/get-valid-parent)				            ; find the inmediate parent which fits the bill
 
-				(cond ((not (web-mode-element-tag-name))
-							 (progn
-								 (push-mark html-tools-elem-beg t t)
-								 (goto-char html-tools-elem-end)
-								 (web-mode-element-wrap tag)
-								 (when (region-active-p) (push-mark nil t nil))
-								 ))
+				(cond
+				 ((not (web-mode-element-tag-name))             ; element do not have an enclosing tag
+					(html-tools/tag-orphan-paragraph tag)
+					)
 
-							((web-mode-element-tag-name)
-							 (progn
-								 (message "%s" (web-mode-element-tag-name))
-								 (goto-char html-tools-elem-beg)
-								 (web-mode-element-rename tag))
-							 ))))
-		(html-tools/clean-vars)))
+				 ((not html-tools-parent-tag)                   ; it's an orphan element
+					(if (and (web-mode-element-tag-name)
+									 (not (member (web-mode-element-tag-name) html-tools-inline)))
+							(web-mode-element-rename tag)             ; Orphan, but not anonymous
+						(html-tools/tag-orphan-paragraph tag)))	    ; Orphan and anonymous
 
-;; 			 (if (and (member html-tools-parent-tag html-tools-containers)
-;; 								(member (web-mode-element-tag-name elem) html-tools-paragraphs))
-;; 					 (progn
-;; 						 (message "3: %s" parent)
-;; 				 (progn                                      ;; Wrap element next to or around point with the paragraph tag
-;; 					 (goto-char elem_pos)
-;; 					 (html-tools/bound-paragraph)
-;; 					 (message "4: %s" html-tools-current-tag)
-;; 					 (read-from-minibuffer "... ")
-;; 					 ;; misaligned tags
-;; 					 ;; ----------------------------------------------------
-;; 					 ;; IF paragraph starts with a tag, wrap tags are alone,
-;; 					 ;; unlike inline when not. why?
-;; 					 (when (buffer-narrowed-p)
-;; 						 (indent-region (point-min)(point-max))
-;; 						 (goto-char (point-max))
-;; 						 (widen)))
-;; 				 )) ; when
-;; 		 ;; Wrap element next to or around point with the word tag
-;; 		))) ;defun
+
+				 ((web-mode-element-tag-name)		                ; we're over a tag
+
+					;; TODO: recheck how this works, unneeded recursion?.
+					(if (member (web-mode-element-tag-name) html-tools-inline)
+							(progn (html-tools/get-valid-parent)
+										 (html-tools/dwim-tag tag))
+						(web-mode-element-rename tag))))
+
+				(goto-char html-tools-elem-pos)
+				(html-tools/clean-vars)))))
+
+
+(defun html-tools/tag-orphan-paragraph (tag)
+	"Tag an orphan paragraph.
+Work over automatic selections.  Not to be used directly.
+TAG is the tag to be used."
+	(html-tools/bound-paragraph)
+	(push-mark (html-tools/first-of-it))
+	(goto-char (html-tools/last-of-it))
+	(web-mode-element-wrap tag)
+	(widen)
+	(when (region-active-p) (push-mark nil t nil))
+	(goto-char html-tools-elem-pos)
+	)
 
 (defun html-tools/clean-vars()
 	"Clear vars."
@@ -178,50 +259,23 @@ TAG is the tag to add/replace."
 				html-tools-elem-beg       nil
 				html-tools-elem-end       nil
 				html-tools-parent-tag     nil
-				html-tools-parent-element nil
 				html-tools-current-tag    nil)
 	)
 
-(defun html-tools/set-references()
-	"Set references from current element."
-	(setq html-tools-elem-pos (point)) 											 ; punto en el que se encuentra el cursor al iniciar el comando
 
-	(html-tools/bound-paragraph)
-	;; (save-excursion
+(defun html-tools/get-valid-parent( )
+	"Look up element parent until find a paragraph or container which can be used."
+	(interactive)
+	(let (elem)
+		(setq elem (web-mode-element-parent)
+					html-tools-parent-tag (web-mode-element-tag-name))
 
-	;; 	;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	;; 	(while (not (or
-	;; 							 (member (web-mode-element-tag-name) html-tools-paragraphs)
-	;; 							 (member (web-mode-element-tag-name) html-tools-containers)))
-	;; 		(web-mode-element-parent)
-	;; 		(message "2: %s" (web-mode-element-tag-name))
-	;; 		)
+		(cond ((eq elem nil)
+					 (setq html-tools-parent-tag nil))
 
-	;; 	(setq html-tools-parent-element (web-mode-element-parent))
-	;; 	(setq html-tools-parent-tag (web-mode-element-tag-name)))
-	;; 	;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-	;; (message "%s" html-tools-parent-element)
-	;; (message "%s" html-tools-parent-tag)
-
-	(widen)
-	(deactivate-mark)
-	(message "%s" html-tools-elem-pos)
-	(message "%s" html-tools-elem-beg)
-	(message "%s" html-tools-elem-end)
-	)
-
-(defun html-tools/get-parent( )
-	"TODO:."
-	(save-excursion
-		(while (not (or
-								 (member (web-mode-element-tag-name) html-tools-paragraphs)
-								 (member (web-mode-element-tag-name) html-tools-containers)))
-			(web-mode-element-parent)
-			(message "2: %s" (web-mode-element-tag-name))
-			)
-		(setq html-tools-parent-element (web-mode-element-parent))
-		(setq html-tools-parent-tag (web-mode-element-tag-name))))
+					((or (eq (web-mode-element-tag-name) nil)
+							 (member (web-mode-element-tag-name) html-tools-inline))
+					 (html-tools/get-valid-parent)))))
 
 
 ;; Line breaks           ---------------------------------------------------------------------------------
@@ -310,7 +364,6 @@ REVERSE - Jump to previous position in skeleton"
 	(html-tools/skeleton-next-position t))
 
 
-
 ;; Lists    ---------------------------------------------------------------------------------
 
 (defun html-tools/mk-ul() "Formats lines from active region to an unordered list." (interactive) (html-tools/make-list html-tools-ul))
@@ -375,7 +428,6 @@ TAG."
 (defun html-tools/insert-footnotes-container()
 	"Insert footnotes container at the end of body."
 	(interactive)
-	(save-excursion
 		;; find container parent which is semantically significant
 		;; by now, just body
 
@@ -387,13 +439,14 @@ TAG."
 		(web-mode-tag-match)							              ; goto just before its closing tag
 		(html-tools/footnote-container)				          ; insert skeleton
 		)
-	)
+
 
 ;; TODO: reindent, m-q
 
 (defun html-tools/mk-footnote()
 	"Insert footnote reference at point.
 Requires working with a selection."
+
 	(interactive)
 	(let (next-footnote-pos footnote rb re)
 		(save-excursion
