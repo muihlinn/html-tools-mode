@@ -21,7 +21,6 @@
 
 (defvar html-tools-containers
   '("body" "article" "aside" "main" "header" "footer" "section" "div" ))
-(defvar html-tools-words (list html-tools-strong html-tools-small html-tools-em))
 
 (defvar html-tools-h1 "h1" "Heading level 1." )
 (defvar html-tools-h2 "h2" "Heading level 2." )
