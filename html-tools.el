@@ -492,7 +492,7 @@ Requires working with a selection."
 ;;;###autoload
 (define-minor-mode html-tools-mode
 	"Easy formatting of html code."
-	:lighter " html"
+	:lighter " htmlt"
 	:keymap (let ((html-tools-map (make-sparse-keymap)))
 						;; line breaks           -------------------------------------------------------
 						(define-key html-tools-map [S-return]  'html-tools/mk-br)
