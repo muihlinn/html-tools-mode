@@ -489,6 +489,7 @@ Requires working with a selection."
 
 ;; Minor mode definition    ---------------------------------------------------------------------------------
 
+;;;###autoload
 (define-minor-mode html-tools-mode
 	"Easy formatting of html code."
 	:lighter " html"
@@ -526,6 +527,7 @@ Requires working with a selection."
 
 						html-tools-map))
 
+;;;###autoload
 (add-hook 'web-mode-hook 'html-tools-mode)
 
 (provide 'html-tools)
