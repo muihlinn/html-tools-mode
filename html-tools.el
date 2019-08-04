@@ -3,7 +3,7 @@
 
 ;;; Commentary:
 
-;; Copyright 2016-2018 Luis Miguel Castañeda Navas
+;; Copyright 2016-2019 Luis Miguel Castañeda Navas
 ;; License: GNU General Public License >= 3
 ;; Distribution: This file is not part of Emacs nor web-mode
 
